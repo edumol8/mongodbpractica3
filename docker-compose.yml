@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mongo1:
+    image: mongo:latest
+    container_name: mongo1
+    ports:
+      - "27018:27017"
+    networks:
+      - mongo_net
+
+  mongo2:
+    image: mongo:latest
+    container_name: mongo2
+    ports:
+      - "27019:27017"
+    networks:
+      - mongo_net
+
+  mongo3:
+    image: mongo:latest
+    container_name: mongo3
+    ports:
+      - "27020:27017"
+    networks:
+      - mongo_net
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_lb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    networks:
+      - mongo_net
+
+networks:
+  mongo_net:
+    driver: bridge
