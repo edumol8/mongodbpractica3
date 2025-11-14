@@ -4,6 +4,7 @@ services:
   mongo1:
     image: mongo:latest
     container_name: mongo1
+    hostname: mongo1          # ← AQUI
     ports:
       - "27018:27017"
     networks:
@@ -12,6 +13,7 @@ services:
   mongo2:
     image: mongo:latest
     container_name: mongo2
+    hostname: mongo2          # ← AQUI
     ports:
       - "27019:27017"
     networks:
@@ -20,6 +22,7 @@ services:
   mongo3:
     image: mongo:latest
     container_name: mongo3
+    hostname: mongo3          # ← AQUI
     ports:
       - "27020:27017"
     networks:
@@ -36,6 +39,19 @@ services:
       - mongo1
       - mongo2
       - mongo3
+    networks:
+      - mongo_net
+
+  app:
+    build: ./app
+    container_name: flask_app
+    ports:
+      - "5000:5000"
+    environment:
+      # IMPORTANTÍSIMO: la app se conecta al balanceador nginx, NO directo a mongo1/2/3
+      - MONGO_URI=mongodb://nginx:27017/
+    depends_on:
+      - nginx
     networks:
       - mongo_net
 
